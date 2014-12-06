@@ -6,27 +6,22 @@ function! notesystem#NewNote(noteName)
     let l:noteFname = tolower(l:noteFname.".md")
 
     " get the target directory of the new note
-    " let l:cwd = getcwd()
-    " let l:bufferDir = expand('%:p:h')
-    " exec 'lcd ' . l:bufferDir
+    let l:cwd = getcwd()
+    exec 'lcd ' . g:notes_dir
     call inputsave()
     let l:noteDir = input('Note dir: ', './', 'dir')
     let l:noteDir = substitute(l:noteDir, '/ *$', '', '')
     call inputrestore()
-    " exec 'lcd ' . l:cwd
-
-    " create a link
-    let l:target = l:noteDir . '/' . l:noteFname
-    let l:link = printf(" [%s](%s)", a:noteName, l:target)
-
-    " insert the link at the current cursor location
-    call setline(line('.'), getline('.') . l:link)
+    exec 'lcd ' . l:cwd
 
     " open a new buffer for the new note and insert the title
+    let l:target = l:noteDir . '/' . l:noteFname
     exec 'e ' . l:target
     call setline(line('.'), getline('.') . '# ' . a:noteName)
 
-    return l:link
+    " create a link and put it in register l
+    let l:link = printf("[%s](%s)", a:noteName, l:target)
+    let @l = l:link
 
 endfunction
 
