@@ -144,3 +144,7 @@ for source_path in source_path_list:
 vim.command("return '{:s}'".format(links[1:])) # return
 endpython
 endfunction
+
+function! notesystem#GrepNotes(regex)
+    exec 'Ag! -G "md|rst|taskpaper" ' . a:regex . ' '. fnameescape(g:notes_dir)
+endfunction
