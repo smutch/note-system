@@ -145,6 +145,32 @@ vim.command("return '{:s}'".format(links[1:])) # return
 endpython
 endfunction
 
+function! s:ag_handler(lines)
+    if len(a:lines) < 2 | return | endif
+
+    let [key, line] = a:lines[0:1]
+    let [file, line, col] = split(line, ':')[0:2]
+    let cmd = get({'ctrl-x': 'split', 'ctrl-v': 'vertical split', 'ctrl-t': 'tabe'}, key, 'e')
+    execute cmd escape(file, ' %#\')
+    execute line
+    execute 'normal!' col.'|zz'
+endfunction
+
+function! notesystem#FuzzyGrepNotes(regex)
+    if a:regex == ''
+        let regex = '"^.*$"'
+    else
+        let regex = '"'.escape(a:regex, '"\').'"'
+    endif
+
+    call fzf#run({
+                \ 'source': 'ag --nobreak --noheading --column -G "md|taskpaper|rst" '.regex.' '.fnameescape(g:notes_dir),
+                \ 'sink*':    function('s:ag_handler'),
+                \ 'options': '-x --ansi --expect=ctrl-t,ctrl-v,ctrl-x --no-multi --color hl:68,hl+:110',
+                \ 'down':    '50%'
+                \ })
+endfunction
+
 function! notesystem#GrepNotes(regex)
     exec 'Ag! -G "md|rst|taskpaper" ' . a:regex . ' '. fnameescape(g:notes_dir)
 endfunction
