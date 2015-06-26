@@ -11,6 +11,7 @@ command! -nargs=+ NewNote call notesystem#NewNote('<args>')
 command! -nargs=+ GrepNotes call notesystem#GrepNotes('<args>')
 command! -nargs=? FuzzyGrepNotes call notesystem#FuzzyGrepNotes('<args>')
 command! OpenNote call notesystem#OpenNote()
+command! GenLink call notesystem#GenLink()
 
 au FileType markdown
     \ command! -buffer -nargs=+ InsertImage execute ":normal! a" . notesystem#InsertImage('<args>')
@@ -21,5 +22,6 @@ if g:notesystem_map_keys
     nnoremap <Leader>ng :FuzzyGrepNotes 
     nnoremap <Leader>nf :OpenNote<CR>
     nnoremap <Leader>nr :RenderNotes<CR>
+    nnoremap <Leader>nl :GenLink<CR>
     autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertImage 
 endif

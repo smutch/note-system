@@ -20,7 +20,7 @@ function! notesystem#NewNote(noteName)
     let l:target = g:notes_dir . '/' . l:noteDir . '/' . l:noteFname
     exec 'e ' . l:target
     call setline(line('.'), getline('.') . 'tags: ')
-    call append(line('.'), ['', '# '.a:noteName, '', ''])
+    call append(line('.'), ['date: '.strftime('%Y-%m-%d'), '', '# '.a:noteName, '', ''])
     normal! G
 
     " create a link and put it in register l
@@ -149,13 +149,25 @@ vim.command("return '{:s}'".format(links[1:])) # return
 endpython
 endfunction
 
+function! notesystem#GenLink()
+    let l:fname = expand('%:t')
+
+    let l:note_name = substitute(l:fname, '-[0-9]*\..*', '', '')
+    let l:note_name = substitute(l:note_name, '\\', '', 'g')
+    let l:note_name = substitute(l:note_name, '_', ' ', 'g')
+    let l:note_id = substitute(l:fname, '.*-\([0-9]*\)\..*', '\1', '')
+
+    let l:link = '('.l:note_name.')[ [['.l:note_id.']] ]'
+    let @l = l:link
+endfunction
+
 function! s:ag_handler(lines)
     if len(a:lines) < 2 | return | endif
 
     let [key, line] = a:lines[0:1]
     let [file, line, col] = split(line, ':')[0:2]
     let cmd = get({'ctrl-x': 'split', 'ctrl-v': 'vertical split', 'ctrl-t': 'tabe'}, key, 'e')
-    execute cmd escape(file, ' %#\')
+    execute cmd escape(g:notes_dir.'/'.file, ' %#\')
     execute line
     execute 'normal!' col.'|zz'
 endfunction
