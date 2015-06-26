@@ -191,22 +191,22 @@ function! notesystem#FuzzyGrepNotes(regex)
 endfunction
 
 function! notesystem#GrepNotes(regex)
-    exec 'Ag! -G "md|rst|taskpaper" ' . a:regex . ' '. fnameescape(g:notes_dir)
+    exec "Ag! -G 'md|rst|taskpaper' '" . escape(escape(a:regex, ' %#\'), ' %#\') . "' " . fnameescape(g:notes_dir)
 endfunction
 
 function! notesystem#OpenNote()
-    let l:cwd = getcwd()
-    exec 'lcd ' . g:notes_dir
-    call inputsave()
-    let l:note = input('Note: ', '', 'file')
-    let l:note = substitute(l:note, '/ *$', '', '')
-    call inputrestore()
-    exec 'lcd ' . l:cwd
+    " let l:cwd = getcwd()
+    " exec 'lcd ' . g:notes_dir
+    " call inputsave()
+    " let l:note = input('Note: ', '', 'file')
+    " let l:note = substitute(l:note, '/ *$', '', '')
+    " call inputrestore()
+    " exec 'lcd ' . l:cwd
 
-    if l:note == ''
+    " if l:note == ''
         exec 'CtrlP '.g:notes_dir
-    else
-        exec 'edit '.g:notes_dir.'/'.l:note
-    endif
+    " else
+    "     exec 'edit '.g:notes_dir.'/'.l:note
+    " endif
 endfunction
 
