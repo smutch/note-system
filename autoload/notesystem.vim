@@ -191,7 +191,11 @@ function! notesystem#FuzzyGrepNotes(regex)
 endfunction
 
 function! notesystem#GrepNotes(regex)
-    exec "Ag! -G 'md|rst|taskpaper' '" . escape(escape(a:regex, ' %#\'), ' %#\') . "' " . fnameescape(g:notes_dir)
+    let l:gp = &grepprg
+    let &grepprg = 'ag -G "md\|rst\|taskpaper" $* ' . fnameescape(g:notes_dir)
+    exec 'silent grep! ' . a:regex
+    let &grepprg = l:gp
+    copen
 endfunction
 
 function! notesystem#OpenNote()
