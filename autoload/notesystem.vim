@@ -10,13 +10,12 @@ function! notesystem#NewNote(noteName)
     let l:cwd = getcwd()
     exec 'lcd ' . g:notes_dir
     call inputsave()
-    let l:noteDir = input('Note dir: ', './', 'dir')
-    let l:noteDir = substitute(l:noteDir, '/ *$', '', '')
+    let l:noteDir = input('Note dir: ', '', 'dir')
     call inputrestore()
     exec 'lcd ' . l:cwd
 
     " open a new buffer for the new note and insert the title
-    let l:target = g:notes_dir . '/' . l:noteDir . '/' . l:noteFname
+    let l:target = simplify(g:notes_dir ."/". l:noteDir ."/". l:noteFname)
     exec 'e ' . l:target
     call setline(line('.'), getline('.') . 'tags:  ')
     let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')
@@ -28,8 +27,8 @@ function! notesystem#NewNote(noteName)
     normal! G
 
     " create a link and put it in register l
-    let l:target = '/' . l:noteDir . '/' . l:noteFname
-    let l:link = printf("[%s](%s)", a:noteName, l:target)
+    let l:link = simplify("/". l:noteDir ."/". l:noteFname)
+    let l:link = printf("[%s](%s)", a:noteName, l:link)
     let @l = l:link
 
 endfunction
