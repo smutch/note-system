@@ -1,11 +1,10 @@
+py3 import notesystem
+
 function! notesystem#NewNote(noteName)
 
     " sanitise note name
-    let l:noteFname = substitute(a:noteName, " ", "_", "g")
-    let l:noteFname = substitute(l:noteFname, "\\", "", "g")
-    let l:noteFname = tolower(l:noteFname)
-    let l:identifier = strftime('%Y%m%d%H%M')
-    let l:noteFname = l:noteFname . '-' . l:identifier . '.md'
+    exec 'py3 notesystem.slugify("' . a:noteName . '")'
+    let l:noteFname = l:slug . '.md'
 
     " get the target directory of the new note
     let l:cwd = getcwd()
@@ -19,12 +18,18 @@ function! notesystem#NewNote(noteName)
     " open a new buffer for the new note and insert the title
     let l:target = g:notes_dir . '/' . l:noteDir . '/' . l:noteFname
     exec 'e ' . l:target
-    call setline(line('.'), getline('.') . 'tags: ')
-    call append(line('.'), ['date: '.strftime('%Y-%m-%d'), '', '# '.a:noteName, '', ''])
+    call setline(line('.'), getline('.') . 'tags:  ')
+    let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')
+    call append(line('.'), ['created: ' . l:time . '  ',
+                \ 'modified: ' . l:time . '  ',
+                \ '',
+                \ '# '.a:noteName,
+                \ '', ''])
     normal! G
 
     " create a link and put it in register l
-    let l:link = printf("[%s]([[%s]])", a:noteName, l:identifier)
+    let l:target = '/' . l:noteDir . '/' . l:noteFname
+    let l:link = printf("[%s](%s)", a:noteName, l:target)
     let @l = l:link
 
 endfunction
