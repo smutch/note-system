@@ -11,17 +11,20 @@ command! -nargs=+ NewNote call notesystem#NewNote('<args>')
 command! -nargs=+ GrepNotes call notesystem#GrepNotes('<args>')
 command! -nargs=? FuzzyGrepNotes call notesystem#FuzzyGrepNotes('<args>')
 command! OpenNote call notesystem#OpenNote()
-command! GenLink call notesystem#GenLink()
 
-au FileType markdown
-    \ command! -buffer -nargs=+ InsertImage execute ":normal! a" . notesystem#InsertImage('<args>')
+augroup Notes
+    au!
+    au FileType markdown
+                \ command! -buffer -nargs=+ InsertImages execute ":normal! a" . notesystem#InsertAssets('<args>')
+    au FileType markdown
+                \ command! -buffer -nargs=+ InsertAssets execute ":normal! a" . notesystem#InsertAssets('<args>')
+    if g:notesystem_map_keys
+        nnoremap <Leader>nn :NewNote 
+        nnoremap <Leader>ng :GrepNotes 
+        nnoremap <Leader>nf :FuzzyGrepNotes 
+        nnoremap <Leader>no :OpenNote<CR>
+        nnoremap <Leader>nr :RenderNotes<CR>
+        autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertAssets<space>
+    endif
+augroup END
 
-if g:notesystem_map_keys
-    nnoremap <Leader>nn :NewNote 
-    nnoremap <Leader>ns :GrepNotes 
-    nnoremap <Leader>ng :FuzzyGrepNotes 
-    nnoremap <Leader>nf :OpenNote<CR>
-    nnoremap <Leader>nr :RenderNotes<CR>
-    nnoremap <Leader>nl :GenLink<CR>
-    autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertImage 
-endif
