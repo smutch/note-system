@@ -1,21 +1,27 @@
 py3 import notesystem
 
-function! notesystem#NewNote(noteName)
+function! notesystem#NewNote(noteName, standalone)
 
     " sanitise note name
     exec 'py3 notesystem.slugify("' . a:noteName . '")'
     let l:noteFname = l:slug . '.md'
 
+    if a:standalone
+        let l:notes_dir = getcwd()
+    else
+        let l:notes_dir = g:notes_dir
+    endif
+
     " get the target directory of the new note
     let l:cwd = getcwd()
-    exec 'lcd ' . g:notes_dir
+    exec 'lcd ' . l:notes_dir
     call inputsave()
     let l:noteDir = input('Note dir: ', '', 'dir')
     call inputrestore()
     exec 'lcd ' . l:cwd
 
     " open a new buffer for the new note and insert the title
-    let l:target = simplify(g:notes_dir ."/". l:noteDir ."/". l:noteFname)
+    let l:target = simplify(l:notes_dir ."/". l:noteDir ."/". l:noteFname)
     exec 'e ' . l:target
     call setline(line('.'), getline('.') . 'tags:  ')
     let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')

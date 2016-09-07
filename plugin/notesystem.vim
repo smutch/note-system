@@ -7,7 +7,8 @@ if !exists('g:notes_dir')
 endif
 
 command! RenderNotes execute "!open -a Marked\\ 2 " . g:notes_dir
-command! -nargs=+ NewNote call notesystem#NewNote('<args>')
+command! -nargs=+ NewNote call notesystem#NewNote('<args>', 0)
+command! -nargs=+ StartNote call notesystem#NewNote('<args>', 1)
 command! -nargs=+ GrepNotes call notesystem#GrepNotes('<args>')
 command! -nargs=? FuzzyGrepNotes call notesystem#FuzzyGrepNotes('<args>')
 command! OpenNote call notesystem#OpenNote()
@@ -18,8 +19,12 @@ augroup Notes
                 \ command! -buffer -nargs=+ InsertImages execute ":normal! a" . notesystem#InsertAssets('<args>')
     au FileType markdown
                 \ command! -buffer -nargs=+ InsertAssets execute ":normal! a" . notesystem#InsertAssets('<args>')
+
+    au BufWritePre *.md exe "norm mz"|exe '%s/^\(modified\: \).*/\1'.strftime("%Y-%m-%d %H:%M:%S %Z")."  /e"|norm `z
+
     if g:notesystem_map_keys
         nnoremap <Leader>nn :NewNote 
+        nnoremap <Leader>ns :StartNote 
         nnoremap <Leader>ng :GrepNotes 
         nnoremap <Leader>nf :FuzzyGrepNotes 
         nnoremap <Leader>no :OpenNote<CR>
