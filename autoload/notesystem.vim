@@ -20,17 +20,24 @@ function! notesystem#NewNote(noteName, standalone)
     call inputrestore()
     exec 'lcd ' . l:cwd
 
-    " open a new buffer for the new note and insert the title
     let l:target = simplify(l:notes_dir ."/". l:noteDir ."/". l:noteFname)
+
+    " If the file doesn't exist then create a pre-populated buffer.  If it
+    " does exist then just open it.
     exec 'e ' . l:target
-    call setline(line('.'), getline('.') . 'tags:  ')
-    let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')
-    call append(line('.'), ['created: ' . l:time . '  ',
-                \ 'modified: ' . l:time . '  ',
-                \ '',
-                \ '# '.a:noteName,
-                \ '', ''])
-    normal! G
+    if empty(glob(l:target))
+        " open a new buffer for the new note and insert the title
+        call setline(line('.'), getline('.') . 'tags:  ')
+        let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')
+        call append(line('.'), ['created: ' . l:time . '  ',
+                    \ 'modified: ' . l:time . '  ',
+                    \ '',
+                    \ '# '.a:noteName,
+                    \ '', ''])
+        normal! G
+    else
+        echom 'File already exists! Opening...'
+    endif
 
     " create a link and put it in register l
     let l:link = simplify("/". l:noteDir ."/". l:noteFname)
