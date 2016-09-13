@@ -73,7 +73,7 @@ function! notesystem#FuzzyGrepNotes(regex)
     let curdir = getcwd()
     exec 'cd '.g:notes_dir
     call fzf#run({
-                \ 'source': 'ag --nobreak --noheading --column -G "md|taskpaper|rst" '.regex,
+                \ 'source': 'ag --nogroup --nobreak --noheading --nocolor --column -G "md|taskpaper|rst" '.regex,
                 \ 'sink*':    function('s:ag_handler'),
                 \ 'options': '-x --ansi --expect=ctrl-t,ctrl-v,ctrl-x --no-multi --color hl:68,hl+:110',
                 \ 'down':    '50%'
@@ -83,7 +83,7 @@ endfunction
 
 function! notesystem#GrepNotes(regex)
     let l:gp = &grepprg
-    let &grepprg = 'ag -G "md\|rst\|taskpaper" $* ' . fnameescape(g:notes_dir)
+    let &grepprg='ag --nogroup --nocolor --column -G "md\|rst\|taskpaper" $* ' . fnameescape(g:notes_dir)
     exec 'silent grep! ' . a:regex
     let &grepprg = l:gp
     copen
