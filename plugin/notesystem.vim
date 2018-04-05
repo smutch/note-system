@@ -9,9 +9,6 @@ endif
 command! RenderNotes execute "!open -a Marked\\ 2 " . g:notes_dir
 command! -nargs=+ NewNote call notesystem#NewNote("<args>", 0)
 command! -nargs=+ StartNote call notesystem#NewNote("<args>", 1)
-command! -nargs=+ GrepNotes call notesystem#GrepNotes("<args>")
-command! -nargs=? FuzzyGrepNotes call notesystem#FuzzyGrepNotes("<args>")
-command! OpenNote call notesystem#OpenNote()
 
 augroup Notes
     au!
@@ -25,9 +22,6 @@ augroup Notes
     if g:notesystem_map_keys
         nnoremap <Leader>nn :NewNote 
         nnoremap <Leader>ns :StartNote 
-        nnoremap <Leader>ng :GrepNotes 
-        nnoremap <Leader>nf :FuzzyGrepNotes 
-        nnoremap <Leader>no :OpenNote<CR>
         nnoremap <Leader>nr :RenderNotes<CR>
         autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertAssets<space>
     endif
