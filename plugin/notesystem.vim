@@ -15,8 +15,6 @@ command! -bang -nargs=* OpenNote call notesystem#OpenNote("<args>", <bang>0 ? 0 
 augroup Notes
     au!
     au FileType markdown
-                \ command! -buffer -nargs=+ InsertImages execute ":normal! a" . notesystem#InsertAssets("<args>")
-    au FileType markdown
                 \ command! -buffer -nargs=+ InsertAssets execute ":normal! a" . notesystem#InsertAssets("<args>")
 
     au BufWritePre *.md exe "norm mz"|exe '%s/^\(modified\: \).*/\1'.strftime("%Y-%m-%d %H:%M:%S %Z")."  /e"|norm `z
