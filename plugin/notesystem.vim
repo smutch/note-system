@@ -6,9 +6,11 @@ if !exists('g:notes_dir')
     let g:notes_dir = -1
 endif
 
-command! RenderNotes execute "!open -a Marked\\ 2 " . g:notes_dir
+command! -bang RenderNote execute "!open -a Marked\\ 2 " . (<bang>0 ? g:notes_dir : '%:p:h')
 command! -nargs=+ NewNote call notesystem#NewNote("<args>", 0)
-command! -nargs=+ StartNote call notesystem#NewNote("<args>", 1)
+command! -nargs=+ LocalNote call notesystem#NewNote("<args>", 1)
+command! -bang -nargs=* SearchNotes call notesystem#SearchNotes("<args>", <bang>0 ? 0 : 1)
+command! -bang -nargs=* OpenNote call notesystem#OpenNote("<args>", <bang>0 ? 0 : 1)
 
 augroup Notes
     au!
@@ -21,8 +23,10 @@ augroup Notes
 
     if g:notesystem_map_keys
         nnoremap <Leader>nn :NewNote 
-        nnoremap <Leader>ns :StartNote 
-        nnoremap <Leader>nr :RenderNotes<CR>
+        nnoremap <Leader>nl :LocalNote 
+        nnoremap <Leader>n/ :SearchNote 
+        nnoremap <Leader>no :OpenNote 
+        nnoremap <Leader>nr :RenderNote<CR>
         autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertAssets<space>
     endif
 augroup END

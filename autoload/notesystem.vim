@@ -50,3 +50,24 @@ endfunction
 function! notesystem#InsertAssets(sourcePaths)
     exec "py3 notesystem.insert_assets('". a:sourcePaths. "')"
 endfunction
+
+
+function! notesystem#SearchNotes(query, fullScreen)
+    let opts = {'dir': g:notes_dir}
+    call fzf#vim#grep(
+                \ 'rg --no-heading --color=always '.shellescape(a:query),
+                \ 0,
+                \ a:fullScreen ? fzf#vim#with_preview(opts, 'right:50%', '?')
+                \              : fzf#vim#with_preview(opts, 'up:60%:hidden', '?'),
+                \ a:fullScreen)
+endfunction
+
+
+function! notesystem#OpenNote(query, fullScreen)
+    let opts = {'dir': g:notes_dir}
+    call fzf#vim#files(
+                \ a:query, 
+                \ a:fullScreen ? fzf#vim#with_preview(opts, 'right:50%', '?')
+                \              : fzf#vim#with_preview(opts, 'up:60%:hidden', '?'),
+                \ a:fullScreen)
+endfunction
