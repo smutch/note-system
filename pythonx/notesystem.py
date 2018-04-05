@@ -69,7 +69,7 @@ def insert_assets(sources):
         target = os.path.relpath(target, note_dir)
         try:
             target_png = os.path.relpath(target_png, note_dir)
-            link = "[![]({:s})]({:s})".format(target_png, target)
+            link = "[ ![]({:s}) ]({:s})".format(target_png, target)
         except:
             link = "![]({:s})".format(target)
         links.append(link)
