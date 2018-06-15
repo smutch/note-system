@@ -71,3 +71,13 @@ function! notesystem#OpenNote(fullScreen)
                 \              : fzf#vim#with_preview(opts, 'up:60%:hidden', '?'),
                 \ a:fullScreen)
 endfunction
+
+
+function! notesystem#History()
+    call fzf#run({
+                \ 'source':  "gfind . -type f -a \\( -name '*.md' -o -name '*.taskpaper' \\) -printf '%T+\t%p\n' | sort -r | cut -f 2",
+                \ 'sink': 'edit',
+                \ 'dir': g:notes_dir,
+                \ 'options': '--reverse'
+                \ })
+endfunction
