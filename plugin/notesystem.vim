@@ -10,7 +10,7 @@ command! -bang RenderNote execute "!open -a Marked\\ 2 " . (<bang>0 ? g:notes_di
 command! -nargs=+ NewNote call notesystem#NewNote("<args>", 0)
 command! -nargs=+ LocalNote call notesystem#NewNote("<args>", 1)
 command! -bang -nargs=* SearchNotes call notesystem#SearchNotes("<args>", <bang>0 ? 0 : 1)
-command! -bang -nargs=* OpenNote call notesystem#OpenNote("<args>", <bang>0 ? 0 : 1)
+command! -bang OpenNote call notesystem#OpenNote(<bang>0 ? 0 : 1)
 
 augroup Notes
     au!
@@ -23,7 +23,7 @@ augroup Notes
         nnoremap <Leader>nn :NewNote 
         nnoremap <Leader>nl :LocalNote 
         nnoremap <Leader>n/ :SearchNote 
-        nnoremap <Leader>no :OpenNote 
+        nnoremap <Leader>no :OpenNote<CR>
         nnoremap <Leader>nr :RenderNote<CR>
         autocmd FileType markdown nmap <buffer> <LocalLeader>ni :InsertAssets<space>
     endif
