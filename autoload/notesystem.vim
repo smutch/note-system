@@ -27,10 +27,11 @@ function! notesystem#NewNote(noteName, standalone)
     exec 'e ' . l:target
     if empty(glob(l:target))
         " open a new buffer for the new note and insert the title
-        call setline(line('.'), getline('.') . 'tags:  ')
+        call setline(line('.'), getline('.') . '---')
         let l:time = strftime('%Y-%m-%d %H:%M:%S %Z')
-        call append(line('.'), ['created: ' . l:time . '  ',
-                    \ 'modified: ' . l:time . '  ',
+        call append(line('.'), ['tags: ""',
+                    \ 'created: "' . l:time . '"',
+                    \ '...',
                     \ '',
                     \ '# '.a:noteName,
                     \ '', ''])
@@ -52,14 +53,53 @@ function! notesystem#InsertAssets(sourcePaths)
 endfunction
 
 
-function! notesystem#SearchNotes(query, fullScreen)
-    let opts = {'dir': g:notes_dir}
-    call fzf#vim#grep(
-                \ 'rg --no-heading --color=always "'.a:query.'"',
-                \ 0,
-                \ a:fullScreen ? fzf#vim#with_preview(opts, 'right:50%', '?')
-                \              : fzf#vim#with_preview(opts, 'up:60%:hidden', '?'),
-                \ a:fullScreen)
+function! s:result_to_dict(line, with_column)
+  let parts = split(a:line, ':')
+  let text = join(parts[(a:with_column ? 3 : 2):], ':')
+  let dict = {'filename': &acd ? fnamemodify(parts[0], ':p') : parts[0], 'lnum': parts[1], 'text': text}
+  if a:with_column
+    let dict.col = parts[2]
+  endif
+  return dict
+endfunction
+
+function! s:notes_handler(lines)
+  let actions = {
+              \ 'ctrl-t': 'tab split',
+              \ 'ctrl-s': 'split',
+              \ 'ctrl-x': 'NewNote',
+              \ 'ctrl-v': 'vsplit' }
+
+  let query = a:lines[0]
+  let cmd = get(actions, a:lines[1], 'e')
+
+  if cmd == 'NewNote'
+      execute cmd query
+  else
+      let hit = s:result_to_dict(a:lines[2], 1)
+      try
+          execute cmd g:notes_dir.'/'.escape(hit.filename, ' %#\')
+      catch
+      endtry
+  endif
+
+endfunction
+
+function! notesystem#Notes(query, fullscreen)
+  let opts = {
+  \ 'source':  'rg --no-heading --color=always --column "'.a:query.'"',
+  \ 'dir': g:notes_dir,
+  \ 'options': '--print-query --ansi --prompt "NOTES> " '.
+  \            '--multi --bind=alt-a:select-all,alt-d:deselect-all '.
+  \            '--expect=ctrl-x,ctrl-t,ctrl-s,ctrl-v',
+  \ 'sink*': function('s:notes_handler')
+  \}
+
+  if a:fullscreen
+      call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
+  else
+      call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))
+  endif
 endfunction
 
 
@@ -73,11 +113,17 @@ function! notesystem#OpenNote(fullScreen)
 endfunction
 
 
-function! notesystem#History()
-    call fzf#run({
+function! notesystem#History(fullScreen)
+    let opts = {
                 \ 'source':  "gfind . -type f -a \\( -name '*.md' -o -name '*.taskpaper' \\) -printf '%T+\t%p\n' | sort -r | cut -f 2",
                 \ 'sink': 'edit',
                 \ 'dir': g:notes_dir,
                 \ 'options': '--reverse'
-                \ })
+                \ }
+
+  if a:fullscreen
+      call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
+  else
+      call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))
+  endif
 endfunction
