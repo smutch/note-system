@@ -85,26 +85,29 @@ function! s:notes_handler(lines)
 
 endfunction
 
-function! notesystem#Notes(query, fullscreen)
-  let opts = {
-  \ 'source':  'rg --no-heading --color=always --column "'.a:query.'"',
-  \ 'dir': g:notes_dir,
-  \ 'options': '--print-query --ansi --prompt "NOTES> " '.
-  \            '--multi --bind=alt-a:select-all,alt-d:deselect-all '.
-  \            '--expect=ctrl-x,ctrl-t,ctrl-s,ctrl-v',
-  \ 'sink*': function('s:notes_handler')
-  \}
+function! notesystem#Notes(query, fullscreen, subdir)
+    let dir = g:notes_dir . '/' . a:subdir
+    let opts = {
+                \ 'source':  'rg --no-heading --color=always --column "'.a:query.'"',
+                \ 'dir': dir,
+                \ 'options': '--print-query --ansi --prompt "NOTES> " '.
+                \            '--delimiter : --nth 4.. '.
+                \            '--multi --bind=alt-a:select-all,alt-d:deselect-all '.
+                \            '--expect=ctrl-x,ctrl-t,ctrl-s,ctrl-v',
+                \ 'sink*': function('s:notes_handler')
+                \}
 
-  if a:fullscreen
-      call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
-  else
-      call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))
-  endif
+    if a:fullscreen
+        call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
+    else
+        call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))
+    endif
 endfunction
 
 
-function! notesystem#OpenNote(fullScreen)
-    let opts = {'dir': g:notes_dir}
+function! notesystem#OpenNote(fullScreen, subdir)
+    let dir = g:notes_dir . '/' . a:subdir
+    let opts = {'dir': dir}
     call fzf#vim#files(
                 \ '', 
                 \ a:fullScreen ? fzf#vim#with_preview(opts, 'right:50%', '?')
