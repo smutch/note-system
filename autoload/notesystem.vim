@@ -20,7 +20,8 @@ function! notesystem#NewNote(noteName, standalone)
     call inputrestore()
     exec 'lcd ' . l:cwd
 
-    let l:target = simplify(l:notes_dir ."/". l:noteDir ."/". l:noteFname)
+    let l:date = strftime('%Y%m%d')
+    let l:target = simplify(l:notes_dir ."/". l:noteDir ."/". l:date ."-". l:noteFname)
 
     " If the file doesn't exist then create a pre-populated buffer.  If it
     " does exist then just open it.
@@ -35,13 +36,13 @@ function! notesystem#NewNote(noteName, standalone)
                     \ '',
                     \ '# '.a:noteName,
                     \ '', ''])
-        normal! G
+        normal! ggj6la
     else
         echom 'File already exists! Opening...'
     endif
 
     " create a link and put it in register l
-    let l:link = simplify("/". l:noteDir ."/". l:noteFname)
+    let l:link = simplify("/". l:noteDir ."/". l:date ."-". l:noteFname)
     let l:link = printf("[%s](%s)", a:noteName, l:link)
     let @l = l:link
 
@@ -100,7 +101,7 @@ function! notesystem#Notes(query, fullscreen, subdir)
     if a:fullscreen
         call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
     else
-        call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))
+        call fzf#run(fzf#vim#with_preview(opts, 'up:60%', '?'))
     endif
 endfunction
 
@@ -124,7 +125,7 @@ function! notesystem#History(fullScreen)
                 \ 'options': '--reverse'
                 \ }
 
-  if a:fullscreen
+  if a:fullScreen
       call fzf#run(fzf#vim#with_preview(opts, 'right:50%', '?'))
   else
       call fzf#run(fzf#vim#with_preview(opts, 'up:60%:hidden', '?'))

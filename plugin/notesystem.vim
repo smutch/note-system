@@ -6,7 +6,7 @@ if !exists('g:notes_dir')
     let g:notes_dir = -1
 endif
 
-command! -bang -nargs=* Notes call notesystem#Notes("<args>", <bang>0 ? 0 : 1, '')
+command! -bang -nargs=* Notes call notesystem#Notes("<args>", <bang>0 ? 1 : 0, '')
 command! -bang -nargs=* WorkNotes call notesystem#Notes("<args>", <bang>0 ? 0 : 1, 'work')
 command! -bang OpenNote call notesystem#OpenNote(<bang>0 ? 0 : 1, '')
 command! -bang OpenWorkNote call notesystem#OpenNote(<bang>0 ? 0 : 1, 'work')
